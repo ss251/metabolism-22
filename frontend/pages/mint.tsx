@@ -6,16 +6,16 @@ import { Header } from '../components/Header'
 import { Footer } from '../components/Footer'
 import { useState } from 'react'
 import { useContractWrite } from 'wagmi'
+import { ethers } from 'ethers'
+import MintQuantity from '../components/Offers/MintQuantity'
 
 const Mint: NextPage = () => {
 
-    const [mintQuantity, setMintQuantity] = useState({
-        "1": 1,
-        "2": 2,
-        "3": 3,
-        "4": 4,
-        "5": 5,
-    })
+    const [mintQuantity, setMintQuantity] = useState(0)
+
+    const perMintPrice = 0.001;
+    const totalMintPrice = perMintPrice * mintQuantity;
+    const mintValue = ethers.utils.parseEther(totalMintPrice.toString());
 
   // ZORA NFT Edition "purchase" write
     const { data: mintData, isError: mintError, isLoading: cancelAskLoading, isSuccess: cancelAskSuccess, write: cancelAskWrite  } = useContractWrite({
@@ -25,6 +25,9 @@ const Mint: NextPage = () => {
         args: [
             mintQuantity
         ],
+        overrides: {
+            value: mintValue,
+        },
         onError(error, variables, context) {
             console.log("error", error)
         },

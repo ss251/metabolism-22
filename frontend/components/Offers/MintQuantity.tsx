@@ -1,7 +1,7 @@
 import { Fragment } from 'react'
 import { Listbox, Transition } from '@headlessui/react'
 import { CheckIcon, SelectorIcon } from '@heroicons/react/solid'
-import { useAppContext } from '../../context/appContext'
+import { useAppContext } from '../../context/useAppContext'
 
 const sortOptions = [
    { name: 'QUANTITY', queryValue: '0' },

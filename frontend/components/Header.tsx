@@ -20,6 +20,20 @@ export const Header = () => {
           </a>
         </Link>
         <Link
+          href="/mint"
+        >
+          <a className="hover:text-[#f53bc3]">
+          MINT
+          </a>
+        </Link>
+        <Link
+          href="/gallery"
+        >
+          <a className="hover:text-[#f53bc3]">
+          GALLERY
+          </a>
+        </Link>
+        <Link
           href="/indexer"
         >
           <a className="hover:text-[#f53bc3]">

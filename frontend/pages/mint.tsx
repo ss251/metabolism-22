@@ -25,11 +25,11 @@ const Mint: NextPage = () => {
 
     // ZORA NFT Edition "purchase" write
     const { data: mintData, isError: mintError, isLoading: mintLoading, isSuccess: mintSuccess, write: mintWrite } = useContractWrite({
-        addressOrName: "0x230864bab819a49a3e3cd634eb266f9042d22e82",
+        addressOrName: "0x489d0F588Fa4aEEb1b1aB12B2C03Bfe48f06c8Bb",
         contractInterface: editionsABI.abi,
-        functionName: 'cancelAsk',
+        functionName: 'purchase',
         args: [
-            mintQuantity
+            mintQuantity.queryValue,
         ],
         overrides: {
             value: mintValue,

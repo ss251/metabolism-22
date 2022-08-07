@@ -6,26 +6,45 @@ import editionsABI from "@zoralabs/nft-drop-contracts/dist/artifacts/ERC721Drop.
 import { Header } from '../components/Header'
 import { Footer } from '../components/Footer'
 import { useState } from 'react'
-import { useContractWrite } from 'wagmi'
+import { useContractWrite, useContractRead, useWaitForTransaction } from 'wagmi'
 import { BigNumber, ethers } from 'ethers'
 import MintQuantity from '../components/Offers/MintQuantity'
 import useAppContext from '../context/useAppContext'
+import PostMintDialog from '../components/PostMintDialog'
 
 const heavenly = "#40bedc"
 
 const Mint: NextPage = () => {
 
-    const {mintQuantity, setMintQuantity} = useAppContext();
+    const { mintQuantity, setMintQuantity } = useAppContext();
 
+    // ZORA NFT Edition "purchase" write
     const perMintPrice = 0.001;
     const totalMintPrice = String(perMintPrice * mintQuantity.queryValue);
     console.log("totalMintPrice", totalMintPrice);
     const mintValue = BigNumber.from(ethers.utils.parseEther(totalMintPrice)).toString();
     console.log("mintValue", mintValue);
 
-    // ZORA NFT Edition "purchase" write
-    const { data: mintData, isError: mintError, isLoading: mintLoading, isSuccess: mintSuccess, write: mintWrite } = useContractWrite({
-        addressOrName: "0x489d0F588Fa4aEEb1b1aB12B2C03Bfe48f06c8Bb",
+    // totaSupply read call
+    const { data: totalSupplyData, isLoading, isSuccess, isFetching } = useContractRead({
+        addressOrName: "0x489d0F588Fa4aEEb1b1aB12B2C03Bfe48f06c8Bb", // Zora Land proxy contract
+        contractInterface: editionsABI.abi,
+        functionName: "totalSupply",
+        args: [],
+        watch: true,
+        onError(error) {
+            console.log("error: ", error);
+        },
+        onSuccess(totalSupplyData) {
+            console.log("totalSupply: ", totalSupplyData)
+        },
+    })
+
+    const totalSupply = totalSupplyData ? totalSupplyData.toString() : "loading" 
+
+    // useContractWrite is a custom hook that allows us to write to a contract
+    const { data: mintData, isError: mintError, isLoading: mintLoading, isSuccess: mintSuccess, status: mintStatus, write: mintWrite } = useContractWrite({
+        addressOrName: "0x489d0F588Fa4aEEb1b1aB12B2C03Bfe48f06c8Bb",  // Zora Land proxy contract
         contractInterface: editionsABI.abi,
         functionName: 'purchase',
         args: [
@@ -42,6 +61,15 @@ const Mint: NextPage = () => {
         },
     })
 
+    // useWaitForTransaction is a custom hook that allows us to wait for a transaction to be mined
+    const { data: mintWaitData, isError: mintWaitError, isLoading: mintWaitLoading } = useWaitForTransaction({
+        hash: mintData?.hash,
+        onSuccess(mintWaitData) {
+            console.log("txn complete: ", mintWaitData)
+            console.log("txn hash: ", mintWaitData.transactionHash)
+        }
+    })
+
 
     return (
         <div className='flex flex-col justify-center h-screen min-h-screen'>
@@ -55,11 +83,11 @@ const Mint: NextPage = () => {
             <main className="h-full flex flex-col flex-wrap items-center justify-center  ">
                 <div className="flex flex-col flex-wrap items-center">
                     <div className={`text-center p-8 mt-5 sm:mt-0 bg-white border-[16px] border-double border-[${heavenly}] font-gothiccc text-5xl sm:text-7xl h-fit w-fit flex flex-row justify-center`} >
-                        One of the Blessed
+                        Zora Land
                     </div>
                     <div className={`mt-10 mb-10 p-8  border-[16px] border-[${heavenly}] border-double bg-white min-w-fit sm:min-w-min  w-8/12 xl:w-6/12 h-fit  `}>
                         <div className="text-center text-4xl h-fit w-full flex flex-row justify-center " >
-                            Eternal Paradise Awaits
+                            Tokens found in Zora Land
                         </div>
                         <div className="mt-8 w-full flex flex-row justify-center">
                             <MintQuantity colorScheme={heavenly} />
@@ -70,17 +98,13 @@ const Mint: NextPage = () => {
                                 Mint
                             </button>
                         </div>
-                        {/* <PostMintDialog
-                            isHolder={accountIncluded}
-                            publicTxnLoadingStatus={publicMintWaitLoading}
-                            publicTxnSuccessStatus={publicMintStatus}
-                            publicTxnHashLink={publicMintWaitData}
-                            holderTxnLoadingStatus={holderMintWaitLoading}
-                            holderTxnSuccessStatus={holderMintStatus}
-                            holderTxnHashLink={holderMintWaitData}
+                        <PostMintDialog
+                            publicTxnLoadingStatus={mintWaitLoading}
+                            publicTxnSuccessStatus={mintStatus}
+                            publicTxnHashLink={mintWaitData}
                             colorScheme={heavenly}
-                        /> */}
-                        {/* {publicMintWaitLoading == true || holderMintWaitLoading == true ? (
+                        />
+                        {mintWaitLoading == true ? (
                             <div className="text-xl sm:text-2xl mt-10 flex flex-row flex-wrap justify-center ">
                                 <img
                                     className="bg-[#40bedc] p-1 rounded-3xl mb-8 w-fit flex flex-row justify-self-center items-center"
@@ -88,31 +112,25 @@ const Mint: NextPage = () => {
                                     src="/SVG-Loaders-master/svg-loaders/tail-spin.svg"
                                 />
                                 <div className="w-full text-center">
-                                    FZ Holders Mint Price: 0.02 Ξ
+                                    Mint Price: 0.001 Ξ
                                 </div>
                                 <div className="w-full text-center">
-                                    Public Mint Price: 0.04 Ξ
-                                </div>
-                                <div className="w-full text-center">
-                                    {`${MAX_SUPPLY - totalSupply}` + " / " + `${MAX_SUPPLY}` + " Pieces Remaining"}
+                                    {`${totalSupply}` + " tokens minted so far"}
                                 </div>
                             </div>
                         ) : (
                             <div className="text-xl sm:text-2xl mt-10 flex flex-row flex-wrap justify-center ">
                                 <div className="w-full text-center">
-                                    FZ Holders Mint Price: 0.02 Ξ
+                                    Mint Price: 0.001 Ξ
                                 </div>
                                 <div className="w-full text-center">
-                                    Public Mint Price: 0.04 Ξ
-                                </div>
-                                <div className="w-full text-center">
-                                    {`${MAX_SUPPLY - totalSupply}` + " / " + `${MAX_SUPPLY}` + " Pieces Remaining"}
+                                    {`${totalSupply}` + " tokens minted so far"}
                                 </div>
                             </div>
-                        )} */}
-                        <Link href="/decisions">
+                        )}
+                        <Link href="/">
                             <a className="mt-5 text-xl flex flex-row justify-center text-center">
-                                ← BACK TO PURGATORY
+                                ← BACK TO HOME
                             </a>
                         </Link>
                     </div>

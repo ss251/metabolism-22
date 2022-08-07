@@ -5,6 +5,7 @@ import { ZDK, ZDKNetwork, ZDKChain } from "@zoralabs/zdk";
 import { NFTPreview, MediaConfiguration } from '@zoralabs/nft-components';
 import { Networks, Strategies } from "@zoralabs/nft-hooks"
 import mainnetZoraAddresses from "@zoralabs/v3/dist/addresses/1.json"
+import mumbaiZoraAddresses from "@zoralabs/v3/dist/addresses/80001.json"
 import zmmABI from "@zoralabs/v3/dist/artifacts/ZoraModuleManager.sol/ZoraModuleManager.json"
 import erc721abi from 'erc-token-abis/abis/ERC721Full.json'
 import { erc721ABI, useAccount, useContractRead, useContractWrite } from 'wagmi'
@@ -70,7 +71,7 @@ const Protocol: NextPage = () => {
     functionName: 'isApprovedForAll',
     args: [
       currentUserAddress, //owner
-      mainnetZoraAddresses.ERC721TransferHelper // transferhelper
+      mumbaiZoraAddresses.ERC721TransferHelper // transferhelper
     ],
     watch: false,
     onError(error) {
@@ -91,7 +92,7 @@ const Protocol: NextPage = () => {
     contractInterface: erc721ABI,
     functionName: 'setApprovalForAll',
     args: [
-        mainnetZoraAddresses.ERC721TransferHelper,
+        mumbaiZoraAddresses.ERC721TransferHelper,
         true,
     ],
     onError(error, variables, context) {
@@ -104,12 +105,12 @@ const Protocol: NextPage = () => {
 
   // check if owner has approved Asks Module V1.1
   const { data: zmmAsksBool, isError: zmmAsksError, isLoading: zmmAsksLoading, isSuccess: zmmAsksSuccess, isFetching: zmmAsksFetching  } = useContractRead({
-    addressOrName: mainnetZoraAddresses.ZoraModuleManager,
+    addressOrName: mumbaiZoraAddresses.ZoraModuleManager,
     contractInterface: zmmABI.abi,
     functionName: 'isModuleApproved',
     args: [
       currentUserAddress, //owner
-      mainnetZoraAddresses.AsksV1_1 // AsksV1.1 address
+      mumbaiZoraAddresses.AsksV1_1 // AsksV1.1 address
     ],
     watch: false,
     onError(error) {
@@ -126,11 +127,11 @@ const Protocol: NextPage = () => {
 
   // ASKS: approve Asks Module
   const { data: asksZMMApproval, isError: asksZMMErrror, isLoading: asksZMMLoading, isSuccess: asksZMMSuccess, write: asksZMMWrite } = useContractWrite({
-    addressOrName: mainnetZoraAddresses.ZoraModuleManager,
+    addressOrName: mumbaiZoraAddresses.ZoraModuleManager,
     contractInterface: zmmABI.abi,
     functionName: 'setApprovalForModule',
     args: [
-        mainnetZoraAddresses.AsksV1_1,
+        mumbaiZoraAddresses.AsksV1_1,
         true,
     ],
     onError(error, variables, context) {

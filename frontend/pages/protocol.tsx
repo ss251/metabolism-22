@@ -8,7 +8,8 @@ import mainnetZoraAddresses from "@zoralabs/v3/dist/addresses/1.json"
 import mumbaiZoraAddresses from "@zoralabs/v3/dist/addresses/80001.json"
 import zmmABI from "@zoralabs/v3/dist/artifacts/ZoraModuleManager.sol/ZoraModuleManager.json"
 import erc721abi from 'erc-token-abis/abis/ERC721Full.json'
-import { erc721ABI, useAccount, useContractRead, useContractWrite } from 'wagmi'
+import erc20abi from 'erc-token-abis/abis/ERC20Base.json'
+import { useAccount, useContractRead, useContractWrite, useSigner } from 'wagmi'
 import { Header } from '../components/Header'
 import AskRead_disclosure from "../components/Asks/AskRead_disclosure"
 import AskWrite_disclosure from '../components/Asks/AskWrite_disclosure';
@@ -16,6 +17,7 @@ import OffersRead_disclosure from "../components/Offers/OffersRead_disclosure"
 import OffersWrite_disclosure from '../components/Offers/OffersWrite_disclosure';
 import AuctionRead_disclosure from "../components/Auctions/AuctionRead_disclosure"
 import AuctionWrite_disclosure from '../components/Auctions/AuctionWrite_disclosure'
+import { ethers } from 'ethers';
 
 const networkInfo = {
   network: ZDKNetwork.Ethereum,
@@ -89,7 +91,7 @@ const Protocol: NextPage = () => {
   // ASKS: Apporve ERC721TransferHelper as an operator of the specific NFT
   const { data: asksTransferHelperData, isError: asksTransferHelperError, isLoading: asksTransferHelperLoading, isSuccess: asksTransferHelperSuccess, write: asksTransferHelperWrite } = useContractWrite({
     addressOrName: asksNFT.contractAddress,
-    contractInterface: erc721ABI,
+    contractInterface: erc721abi,
     functionName: 'setApprovalForAll',
     args: [
         mumbaiZoraAddresses.ERC721TransferHelper,
@@ -101,7 +103,46 @@ const Protocol: NextPage = () => {
     onSuccess(cancelData, variables, context) {
         console.log("Success!", asksTransferHelperData)
     },
-  })    
+  })
+
+  // // ASKS: Check allowance of ERC20 token for address
+  // const { data: asks20Read, isError: asks20Error, isLoading: asks20Loading, isSuccess: asks20Success, isFetching: asks20Fetching } = useContractRead({
+  //   addressOrName: asksNFT.contractAddress,
+  //   contractInterface: erc20abi,
+  //   functionName: 'allowance',
+  //   args: [
+  //       currentUserAddress,
+  //       mumbaiZoraAddresses.ERC20TransferHelper,
+  //   ],
+  //   watch: false,
+  //   onError(error) {
+  //     console.log("error: ", asks20Error)
+  //   },
+  //   onSuccess(data) {
+  //     console.log("ERC20 approved amount === 0? --> ", asks20Read)
+  //   }  
+  // }) 
+
+  // const allowanceHelperDataBool = () => {
+  //   return Boolean(asks20Read);
+  // }
+
+  // // ASKS: Apporve ERC20TransferHelper as an operator of the specific NFT
+  // const { data: asks20TransferHelperData, isError: asks20TransferHelperError, isLoading: asks20TransferHelperLoading, isSuccess: asks20TransferHelperSuccess, write: asks20TransferHelperWrite } = useContractWrite({
+  //   addressOrName: asksNFT.contractAddress,
+  //   contractInterface: erc20abi,
+  //   functionName: 'approve',
+  //   args: [
+  //       mumbaiZoraAddresses.ERC20TransferHelper,
+  //       ethers.constants.MaxUint256,
+  //   ],
+  //   onError(error, variables, context) {
+  //       console.log("error", error)
+  //   },
+  //   onSuccess(cancelData, variables, context) {
+  //       console.log("Success!", asks20TransferHelperData)
+  //   },
+  // }) 
 
   // check if owner has approved Asks Module V1.1
   const { data: zmmAsksBool, isError: zmmAsksError, isLoading: zmmAsksLoading, isSuccess: zmmAsksSuccess, isFetching: zmmAsksFetching  } = useContractRead({
@@ -140,171 +181,7 @@ const Protocol: NextPage = () => {
     onSuccess(asksZMMApproval, variables, context) {
         console.log("Success!", asksZMMApproval)
     },
-  })      
-
-  // ===== OFFERS =====
-  // ===== OFFERS =====
-  // ===== OFFERS =====
-
-  // OFFERS: check if owner has approved ERC721 transfer helper for specific NFT
-  const { data: offersData, isError: offersError, isLoading: offersLoading, isSuccess: offersSuccess, isFetching: offersFetching  } = useContractRead({
-    addressOrName: offersNFT.contractAddress,
-    contractInterface: erc721abi,
-    functionName: 'isApprovedForAll',
-    args: [
-      currentUserAddress, //owner
-      mainnetZoraAddresses.ERC721TransferHelper // transferhelper
-    ],
-    watch: false,
-    onError(error) {
-      console.log("error: ", offersError)
-    },
-    onSuccess(data) {
-      console.log("Offers ERC721TransferHelper Approved? --> ", offersData)
-    }  
-  })
-
-  const transferHelperDataBoolOffers = () => {
-    return Boolean(offersData);
-  }
-
-    // OFFERS: Apporve ERC721TransferHelper as an operator of the specific NFT
-    const { data: offersTransferHelperData, isError: offersTransferHelperError, isLoading: offersTransferHelperLoading, isSuccess: offersTransferHelperSuccess, write: offersTransferHelperWrite } = useContractWrite({
-      addressOrName: asksNFT.contractAddress,
-      contractInterface: erc721ABI,
-      functionName: 'setApprovalForAll',
-      args: [
-          mainnetZoraAddresses.ERC721TransferHelper,
-          true,
-      ],
-      onError(error, variables, context) {
-          console.log("error", error)
-      },
-      onSuccess(cancelData, variables, context) {
-          console.log("Success!", offersTransferHelperData)
-      },
-  })    
-
-  // check if owner has approved OffersV1 Module
-  const { data: zmmOffersBool, isLoading: zmmOffersLoading, isSuccess: zmmOffersSuccess, isFetching: zmmOffersFetching  } = useContractRead({
-    addressOrName: mainnetZoraAddresses.ZoraModuleManager,
-    contractInterface: zmmABI.abi,
-    functionName: 'isModuleApproved',
-    args: [
-      currentUserAddress, //owner
-      mainnetZoraAddresses.OffersV1 // OffersV1 address
-    ],
-    watch: false,
-    onError(error) {
-        console.log("error: ", error)
-    },
-    onSuccess(data) {
-        console.log("OffersV1 Module Approved? --> ", data)
-    }  
-  })  
-
-  const zmmOffersApprovalCheck = () => {
-    return Boolean(zmmOffersBool);
-  }
-
-  // offers: approve Offers Module
-  const { data: offersZMMApproval, isError: offersZMMErrror, isLoading: offersZMMLoading, isSuccess: offersZMMSuccess, write: offersZMMWrite } = useContractWrite({
-    addressOrName: mainnetZoraAddresses.ZoraModuleManager,
-    contractInterface: zmmABI.abi,
-    functionName: 'setApprovalForModule',
-    args: [
-        mainnetZoraAddresses.OffersV1,
-        true,
-    ],
-    onError(error, variables, context) {
-        console.log("error", error)
-    },
-    onSuccess(offersZMMApproval, variables, context) {
-        console.log("Success!", offersZMMApproval)
-    },
-  })        
-
-  // ===== AUCTIONS =====
-  // ===== AUCTIONS =====
-  // ===== AUCTIONS =====
-
-  // auctions: check if owner has approved ERC721 transfer helper for specific NFT
-  const { data: auctionsData, isError: auctionsError, isLoading: auctionsLoading, isSuccess: auctionsSuccess, isFetching: auctionsFetching  } = useContractRead({
-    addressOrName: auctionsNFT.contractAddress,
-    contractInterface: erc721abi,
-    functionName: 'isApprovedForAll',
-    args: [
-      currentUserAddress, //owner
-      mainnetZoraAddresses.ERC721TransferHelper // transferhelper
-    ],
-    watch: false,
-    onError(error) {
-      console.log("error: ", auctionsError)
-    },
-    onSuccess(data) {
-      console.log("Auctions ERC721TransferHelper Approved? --> ", auctionsData)
-    }  
-  })
-
-  const transferHelperDataBoolAuctions = () => {
-    return Boolean(auctionsData);
-  }
-
-  // auctions: Apporve ERC721TransferHelper as an operator of the specific NFT
-  const { data: auctionsTransferHelperData, isError: auctionsTransferHelperError, isLoading: auctionsTransferHelperLoading, isSuccess: auctionsTransferHelperSuccess, write: auctionsTransferHelperWrite } = useContractWrite({
-    addressOrName: asksNFT.contractAddress,
-    contractInterface: erc721ABI,
-    functionName: 'setApprovalForAll',
-    args: [
-        mainnetZoraAddresses.ERC721TransferHelper,
-        true,
-    ],
-    onError(error, variables, context) {
-        console.log("error", error)
-    },
-    onSuccess(cancelData, variables, context) {
-        console.log("Success!", auctionsTransferHelperData)
-    },
-  })    
-
-  // check if owner has approved AuctionFindersEth Module
-  const { data: zmmAuctionFindersEthBool, isLoading: zmmAuctionFindersEthLoading, isSuccess: zmmAuctionFindersEthSuccess, isFetching: zmmAuctionFindersEthFetching  } = useContractRead({
-    addressOrName: mainnetZoraAddresses.ZoraModuleManager,
-    contractInterface: zmmABI.abi,
-    functionName: 'isModuleApproved',
-    args: [
-      currentUserAddress, //owner
-      mainnetZoraAddresses.ReserveAuctionFindersEth // AuctionFindersEth address
-    ],
-    watch: false,
-    onError(error) {
-        console.log("error: ", error)
-    },
-    onSuccess(data) {
-        console.log("AuctionFindersEth Module Approved? --> ", data)
-    }  
-  })  
-
-  const zmmAuctionFindersEthApprovalCheck = () => {
-    return Boolean(zmmAuctionFindersEthBool);
-  }  
-
-  // offers: approve Auctions Module
-  const { data: auctionsZMMApproval, isError: auctionsZMMErrror, isLoading: auctionsZMMLoading, isSuccess: auctionsZMMSuccess, write: auctionsZMMWrite } = useContractWrite({
-    addressOrName: mainnetZoraAddresses.ZoraModuleManager,
-    contractInterface: zmmABI.abi,
-    functionName: 'setApprovalForModule',
-    args: [
-        mainnetZoraAddresses.ReserveAuctionFindersEth,
-        true,
-    ],
-    onError(error, variables, context) {
-        console.log("error", error)
-    },
-    onSuccess(auctionsZMMApproval, variables, context) {
-        console.log("Success!", auctionsZMMApproval)
-    },
-  })         
+  })              
 
   return (
     <div className='flex flex-col justify-center h-full min-h-screen'>
@@ -474,324 +351,6 @@ const Protocol: NextPage = () => {
                 ASK MODULE WRITES
               </div>
               <AskWrite_disclosure nft={asksNFT} />
-            </div>
-          </div>
-        </div>
-
-        {/* OFFERS MODULE */}
-        {/* OFFERS MODULE */}
-        {/* OFFERS MODULE */}
-
-        <div className='sm:mt-10 '>
-          <div className='h-fit content-start flex flex-row flex-wrap w-full'>
-            <div className="text-2xl h-fit w-full flex flex-row justify-center">            
-              OFFERS MODULE
-            </div>
-            <div className=" justify-center border-2 border-white border-solid flex flex-row h-fit w-full">
-              MAKE AND RECIEVE OFFERS ON NFTs
-            </div>
-            <div className="grid grid-cols-2 border-2 boreder-yellow-500 border-solid w-full" >
-            <a
-                href="https://github.com/0xTranqui/zora-starter-kit"
-                className=" hover:cursor-pointer hover:text-[#f53bc3] text-center"
-              >
-                REPO
-              </a>
-              <a 
-                href="https://etherscan.io/address/0x76744367ae5a056381868f716bdf0b13ae1aeaa3"
-                className="hover:text-[#f53bc3] text-center"
-              >
-              ETHERSCAN
-              </a>
-            </div>
-          </div>
-
-          {/* NFT RENDERING + CONTRACT INPUTS */}
-          <div className="mt-2  border-l-2 border-r-2 border-b-2 border-solid border-white w-full h-fit flex flex-row flex-wrap justify-center "> 
-            <MediaConfiguration
-              networkId="1"                        
-              strategy={zdkStrategyMainnet}
-              strings={{
-                CARD_OWNED_BY: "",
-                CARD_CREATED_BY: "",                           
-              }}
-              style={{
-                theme: {
-                  previewCard: {
-                    background: "black",
-                    height: "200px",
-                    width: "200px"                                    
-                  },
-                  defaultBorderRadius: 0,
-                  lineSpacing: 0,
-                  textBlockPadding: "0"                
-                },              
-              }}
-            >
-              <NFTPreview
-                contract={offersNFT.contractAddress}
-                id={offersNFT.tokenId}
-                showBids={false}
-                showPerpetual={false}
-              />
-            </MediaConfiguration> 
-            <div className="w-full flex flex-row flex-wrap justify-center">
-            <div className="justify-center flex flex-row w-full">
-                <div className="align-center">
-                  CONTRACT ADDRESS
-                </div>
-                <input
-                  className="border-[1px] border-solid border-black ml-2 text-black text-center bg-slate-200"
-                  placeholder="Input NFT Address"
-                  name="inputContract"
-                  type="text"
-                  value={offersNFT.contractAddress}
-                  onChange={(e) => {
-                      e.preventDefault();
-                      setOffersNFT(current => {
-                        return {
-                          ...current,
-                          contractAddress: e.target.value
-                        }
-                      })
-                  }}
-                  required                    
-                >
-                </input>
-              </div>
-              <div className="justify-center flex flex-row w-full">
-                <div className=" mt-1 self-center">
-                  TOKEN ID
-                </div>
-                <input
-                  className="border-l-[1px] border-r-[1px] border-b-[1px] border-solid border-black ml-2 mt-2 flex flex-row align-center text-black text-center bg-slate-200"
-                  placeholder="Input Token Id "
-                  name="inputContract"
-                  type="text"
-                  value={offersNFT.tokenId}
-                  onChange={(e) => {
-                      e.preventDefault();
-                      setOffersNFT(current => {
-                        return {
-                          ...current,
-                          tokenId: e.target.value
-                        }
-                      })
-                  }}
-                  required                    
-                >
-                </input>
-              </div>
-              <div className="flex flex-row flex-wrap w-full justify-center">
-                {zmmOffersApprovalCheck() === false ? (
-                <div className="mt-2 flex w-full justify-center">
-                  <button
-                    onClick={() => offersZMMWrite()}
-                    className="w-fit hover:bg-white hover:text-black border-2 border-white border-solid p-1 mt-1"
-                  >
-                    APPROVE OFFERS MODULE
-                  </button>
-                </div>
-                ) : (
-                <div className="mt-2 flex w-full justify-center">
-                  <button disabled={true}  className="w-fit border-2 border-slate-600 text-slate-400 border-solid p-1 mt-1">
-                    OFFERS MODULE APPROVED ✅
-                  </button>
-                </div>                
-                )}
-                {transferHelperDataBoolOffers() === false ? (
-                <div className="mt-2 flex w-full justify-center">
-                  <button
-                    onClick={() => offersTransferHelperWrite()}
-                    className="w-fit hover:bg-white hover:text-black border-2 border-white border-solid p-1 mt-1"
-                  >
-                    APPROVE TRANSFER HELPER
-                  </button>
-                </div>
-                ) : (
-                <div className="mt-2 flex w-full justify-center">
-                  <button disabled={true}  className="w-fit border-2 border-slate-600 text-slate-400 border-solid p-1 mt-1">
-                    TRANSFER HELPER APPROVED ✅
-                  </button>
-                </div>  
-                )}
-              </div>
-              <div className="mt-8 flex flex-row flex-wrap w-full ">
-                <div className="w-full">
-                  <div className="ml-2 mb-2 text-xl">
-                    OFFERS MODULE READS
-                  </div>
-                  <OffersRead_disclosure nft={offersNFT} />
-                  {/* <AskForNFT_READ nft={asksNFT} /> */}
-                </div>
-              </div>
-              <div className="mt-5 flex flex-row flex-wrap w-full ">
-                <div className="flex flex-row flex-wrap w-full">
-                  <div className="ml-2 mb-2 text-xl">
-                    OFFERS MODULE WRITES
-                  </div>
-                  <OffersWrite_disclosure nft={offersNFT} />
-                </div>
-              </div>              
-
-            </div>                    
-          </div>
-        </div>
-
-        {/* AUCTION MODULE */}
-        {/* AUCTION MODULE */}
-        {/* AUCTION MODULE */}
-
-        <div className='sm:mt-10 '>
-          <div className='h-fit content-start flex flex-row flex-wrap w-full'>
-            <div className="text-2xl h-fit w-full flex flex-row justify-center">            
-              AUCTIONS MODULE
-            </div>
-            <div className=" justify-center border-2 border-white border-solid flex flex-row h-fit w-full">
-              RUN AND BID ON AUCTIONS FOR NFTs
-            </div>
-            <div className="grid grid-cols-2 border-2 boreder-yellow-500 border-solid w-full" >
-              <a
-                href="https://github.com/0xTranqui/zora-starter-kit"
-                className=" hover:cursor-pointer hover:text-[#f53bc3] text-center"
-              >
-                REPO
-              </a>
-              <a 
-                href="https://etherscan.io/address/0x9458E29713B98BF452ee9B2C099289f533A5F377"
-                className="hover:text-[#f53bc3] text-center"
-              >
-              ETHERSCAN
-              </a>
-            </div>
-          </div>
-
-          {/* NFT RENDERING + CONTRACT INPUTS */}              
-          <div className="mt-2 w-full h-fit flex flex-row flex-wrap justify-center "> 
-            <MediaConfiguration
-              networkId="1"                        
-              strategy={zdkStrategyMainnet}
-              strings={{
-                CARD_OWNED_BY: "",
-                CARD_CREATED_BY: "",                           
-              }}
-              style={{
-                theme: {
-                  previewCard: {
-                    background: "black",
-                    height: "200px",
-                    width: "200px"                                    
-                  },
-                  defaultBorderRadius: 0,
-                  lineSpacing: 0,
-                  textBlockPadding: "0"                
-                },              
-              }}
-            >
-              <NFTPreview
-                contract={auctionsNFT.contractAddress}
-                id={auctionsNFT.tokenId}
-                showBids={false}
-                showPerpetual={false}
-              />
-            </MediaConfiguration> 
-            <div className="w-full flex flex-row flex-wrap justify-center">
-              <div className="justify-center flex flex-row w-full">
-                <div className="align-center">
-                  CONTRACT ADDRESS
-                </div>
-                <input
-                  className="border-[1px] border-solid border-black ml-2 text-black text-center bg-slate-200"
-                  placeholder="Input NFT Address"
-                  name="inputContract"
-                  type="text"
-                  value={auctionsNFT.contractAddress}
-                  onChange={(e) => {
-                      e.preventDefault();
-                      setAuctionsNFT(current => {
-                        return {
-                          ...current,
-                          contractAddress: e.target.value
-                        }
-                      })
-                  }}
-                  required                    
-                >
-                </input>
-              </div>
-              <div className="justify-center flex flex-row w-full">
-                <div className=" mt-1 self-center">
-                  TOKEN ID
-                </div>
-                <input
-                  className="border-l-[1px] border-r-[1px] border-b-[1px] border-solid border-black ml-2 mt-2 flex flex-row align-center text-black text-center bg-slate-200"
-                  placeholder="Input Token Id "
-                  name="inputContract"
-                  type="text"
-                  value={auctionsNFT.tokenId}
-                  onChange={(e) => {
-                      e.preventDefault();
-                      setAuctionsNFT(current => {
-                        return {
-                          ...current,
-                          tokenId: e.target.value
-                        }
-                      })
-                  }}
-                  required                    
-                >
-                </input>
-              </div>
-              <div className="flex flex-row flex-wrap w-full justify-center">
-                {zmmAuctionFindersEthApprovalCheck() === false ? (
-                <div className="mt-2 flex w-full justify-center">
-                  <button
-                    onClick={() => auctionsZMMWrite()}
-                    className="w-fit hover:bg-white hover:text-black border-2 border-white border-solid p-1 mt-1"
-                  >
-                    APPROVE AUCTION MODULE
-                  </button>
-                </div>
-                ) : (
-                <div className="mt-2 flex w-full justify-center">
-                  <button disabled={true}  className="w-fit border-2 border-slate-600 text-slate-400 border-solid p-1 mt-1">
-                    AUCTION MODULE APPROVED ✅
-                  </button>
-                </div>                
-                )}
-                {transferHelperDataBoolAuctions() === false ? (
-                <div className="mt-2 flex w-full justify-center">
-                  <button 
-                    onClick={() => auctionsTransferHelperWrite()}
-                    className="w-fit hover:bg-white hover:text-black border-2 border-white border-solid p-1 mt-1"
-                  >
-                    APPROVE TRANSFER HELPER
-                  </button>
-                </div>
-                ) : (
-                <div className="mt-2 flex w-full justify-center">
-                  <button disabled={true}  className="w-fit border-2 border-slate-600 text-slate-400 border-solid p-1 mt-1">
-                    TRANSFER HELPER APPROVED ✅
-                  </button>
-                </div>  
-                )}
-              </div>
-            </div>                   
-          </div>              
-          <div className="mt-8 flex flex-row flex-wrap w-full ">
-            <div className="w-full">
-              <div className="ml-2 mb-2 text-xl">
-                AUCTION MODULE READS
-              </div>
-              <AuctionRead_disclosure nft={auctionsNFT} />
-            </div>
-          </div>
-          <div className="mt-5 flex flex-row flex-wrap w-full ">
-            <div className="flex flex-row flex-wrap w-full">
-              <div className="ml-2 mb-2 text-xl">
-                AUCTION MODULE WRITES
-              </div>
-              <AuctionWrite_disclosure nft={auctionsNFT} />
             </div>
           </div>
         </div>

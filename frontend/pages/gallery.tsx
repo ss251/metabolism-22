@@ -71,7 +71,7 @@ const Gallery: NextPage = () => {
                     NFTs ? NFTs.map(NFT => {
                        
                         return (
-                           <Card image={NFT.media[0]?.gateway} id={NFT.tokenId } title={NFT.title} address={NFT.contract.address} description={NFT.description} ></Card>
+                           <Card image={NFT.media[0]?.raw} id={NFT.tokenId } title={NFT.title} address={NFT.contract.address} description={NFT.description} ></Card>
                         )
                     }) : <div>No NFTs found</div>
                 }

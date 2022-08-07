@@ -59,14 +59,14 @@ const Gallery: NextPage = () => {
   }, [address, chain]);
 
   return (
-    <div className='h-screen min-h-screen'>
+    <div className='h-screen min-h-screen bg-bg_image'>
 
       <Header/>
       
         {/* <h1 className="text-white">
           <button onClick={() => fetchNFTs()}>Fetch</button>
         </h1> */}
-        {NFTs && <div className='flex flex-wrap justify-center mt-12'>
+        {NFTs && <div className='flex flex-wrap justify-center mt-12 '>
                 {
                     NFTs ? NFTs.map((NFT, i)=> {
                        

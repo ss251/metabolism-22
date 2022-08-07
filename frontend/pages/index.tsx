@@ -4,7 +4,7 @@ import { Header } from '../components/Header'
 
 const Home: NextPage = () => {
   return (
-    <div className='flex flex-col justify-center h-screen min-h-screen'>
+    <div className='flex flex-col justify-center h-screen min-h-screen bg-bg_image'>
       <Header />
       <main className="flex flex-col items-center">        
         <h1 className="text-white">

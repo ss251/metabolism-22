@@ -87,10 +87,10 @@ const client = new Web3Storage({ token: process.env.NEXT_PUBLIC_WEB3_API_KEY });
 }
 
   return (
-    <div>
+    <div className="bg-bg_image">
       <Header />
       {address ? (
-        <div className="lg:w-1/4 w-1/2 lg:ml-60 ml-24 -mt-8 lg:mt-0 flex flex-col pb-12">
+        <div className="lg:w-1/4 w-1/2 lg:ml-60 ml-24 -mt-8 lg:mt-0 flex flex-col pb-12 ">
           <h1 className="mt-20 font-bold text-3xl text-white">CREATE NEW ZORA LAND TOKEN</h1>
           <h4 className="mt-12 font-bold text-white">IMAGE URI</h4>
           <input

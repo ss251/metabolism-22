@@ -1,5 +1,5 @@
 import { useContractWrite } from "wagmi";
-import * as asksAddresses from "@zoralabs/v3/dist/addresses/1.json"
+import * as asksAddresses from "@zoralabs/v3/dist/addresses/80001.json"
 import { abi } from "@zoralabs/v3/dist/artifacts/AsksV1_1.sol/AsksV1_1.json"
 import { useState } from "react";
 import { ethers } from "ethers";

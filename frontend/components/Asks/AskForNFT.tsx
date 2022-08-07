@@ -1,5 +1,5 @@
 import { useContractRead } from "wagmi";
-import * as asksAddresses from "@zoralabs/v3/dist/addresses/1.json"
+import * as asksAddresses from "@zoralabs/v3/dist/addresses/80001.json"
 import { abi } from "@zoralabs/v3/dist/artifacts/AsksV1_1.sol/AsksV1_1.json"
 import { BigNumber, utils } from "ethers";
 
@@ -24,7 +24,7 @@ export const AskForNFT = (nft) => {
     })
 
     const currentReadData = data ? data : ""
-    const currentReadPrice = data ? `${utils.formatEther(BigNumber.from(currentReadData[4]).toString())}` + " ETH" : "undefined"
+    const currentReadPrice = data ? `${utils.formatEther(BigNumber.from(currentReadData[4]).toString())}` + " MATIC" : "undefined"
     const currentFindersFee = data ? `${currentReadData[3] / 100 }` + " %" : "undefined"
 
     const listingCheck = (sellerAddress) => {

@@ -18,8 +18,8 @@ const client = new Web3Storage({ token: process.env.NEXT_PUBLIC_WEB3_API_KEY });
     name: "",
     symbol: "",
     description: "",
-    imageURI: "",
-    animationURI: "",
+    image: "",
+    animation_url: "",
   });
   const router = useRouter();
 
@@ -42,13 +42,14 @@ const client = new Web3Storage({ token: process.env.NEXT_PUBLIC_WEB3_API_KEY });
     console.log(notNull);
 
     if (notNull) {
-        const metadataFile = new File([JSON.stringify(formInput)], "tokenURI.json")
+      const {name, description, symbol, image, animation_url} = formInput;
+        const metadataFile = new File([JSON.stringify({name, description, symbol, image, animation_url})], "tokenURI.json")
         // @ts-ignore
         const cid = await client.put([metadataFile], {
           wrapWithDirectory: false,
         });
         let contract = new ethers.Contract("0x55Df5c5CF92bb20A038e55617AF1cC2a78A78D8d", ZoraLand.abi, signer);
-        let transaction = await contract.createToken(`ipfs://${cid}`);
+        let transaction = await contract.createToken(`https://ipfs.infura.io/ipfs/${cid}`);
 
         let tx = await transaction.wait();
 
@@ -64,7 +65,7 @@ const client = new Web3Storage({ token: process.env.NEXT_PUBLIC_WEB3_API_KEY });
         const cid = await client.put(e.target.files, {
           wrapWithDirectory: false,
         });
-        updateFormInput({ ...formInput, imageURI: "ipfs://" + cid });
+        updateFormInput({ ...formInput, image: "ipfs://" + cid });
         const url = `https://ipfs.infura.io/ipfs/${cid}`;
         setImgFileUrl(url);
       } catch (e) {
@@ -77,7 +78,7 @@ const client = new Web3Storage({ token: process.env.NEXT_PUBLIC_WEB3_API_KEY });
       const cid = await client.put(e.target.files, {
         wrapWithDirectory: false,
       });
-      updateFormInput({ ...formInput, animationURI: "ipfs://" + cid });
+      updateFormInput({ ...formInput, animation_url: "ipfs://" + cid });
       const url = `https://ipfs.infura.io/ipfs/${cid}`;
       setAnimationFileUrl(url);
     } catch (e) {

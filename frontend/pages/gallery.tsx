@@ -59,7 +59,7 @@ const Gallery: NextPage = () => {
   }, [address, chain]);
 
   return (
-    <div className='h-screen min-h-screen bg-bg_image'>
+    <div className='min-h-screen bg-bg_image'>
 
       <Header/>
       

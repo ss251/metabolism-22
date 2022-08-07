@@ -8,7 +8,6 @@ import { Footer } from '../components/Footer'
 import { useState } from 'react'
 import { useContractWrite, useContractRead, useWaitForTransaction } from 'wagmi'
 import { BigNumber, ethers } from 'ethers'
-import MintQuantity from '../components/Offers/MintQuantity'
 import useAppContext from '../context/useAppContext'
 import PostMintDialog from '../components/PostMintDialog'
 
@@ -20,7 +19,7 @@ const Mint: NextPage = () => {
 
     // ZORA NFT Edition "purchase" write
     const perMintPrice = 0.001;
-    const totalMintPrice = String(perMintPrice * mintQuantity.queryValue);
+    const totalMintPrice = String(perMintPrice);
     console.log("totalMintPrice", totalMintPrice);
     const mintValue = BigNumber.from(ethers.utils.parseEther(totalMintPrice)).toString();
     console.log("mintValue", mintValue);
@@ -48,7 +47,7 @@ const Mint: NextPage = () => {
         contractInterface: editionsABI.abi,
         functionName: 'purchase',
         args: [
-            mintQuantity.queryValue,
+            1,
         ],
         overrides: {
             value: mintValue,
@@ -90,7 +89,6 @@ const Mint: NextPage = () => {
                             Tokens found in Zora Land
                         </div>
                         <div className="mt-8 w-full flex flex-row justify-center">
-                            <MintQuantity colorScheme={heavenly} />
                             <button
                                 className="flex flex-row justify-self-start  text-2xl  p-3  w-fit h-fit border-2 border-solid border-[#40bedc] hover:bg-[#40bedc] hover:text-white"
                                 onClick={() => mintWrite()}

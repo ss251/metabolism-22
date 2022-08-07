@@ -68,10 +68,10 @@ const Gallery: NextPage = () => {
         </h1> */}
         {NFTs && <div className='flex flex-wrap justify-center mt-12'>
                 {
-                    NFTs ? NFTs.map(NFT => {
+                    NFTs ? NFTs.map((NFT, i)=> {
                        
                         return (
-                           <Card image={NFT.media[0]?.raw} id={NFT.tokenId } title={NFT.title} address={NFT.contract.address} description={NFT.description} ></Card>
+                           <Card key={i} image={NFT.media[0]?.raw} id={NFT.tokenId } title={NFT.title} address={NFT.contract.address} description={NFT.description} ></Card>
                         )
                     }) : <div>No NFTs found</div>
                 }

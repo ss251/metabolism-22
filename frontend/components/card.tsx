@@ -21,7 +21,7 @@ const Card = ({ image, id, title, address, description }) => {
                         <p>{`${id}`}</p>
                     </div>
                     <div className="flex mr-3">
-                        <a target="_blank" className="text-blue-700" href={`https://etherscan.io/token/${address}`}>{`${address.slice(0, 4)}...${address.slice(address.length - 4)}`}</a>
+                        <a target="_blank" rel="noreferrer" className="text-blue-700" href={`https://etherscan.io/token/${address}`}>{`${address.slice(0, 4)}...${address.slice(address.length - 4)}`}</a>
                     </div>
                 </div>
                 <p>{description ? description.slice(0, 200) : "No Description"}</p>

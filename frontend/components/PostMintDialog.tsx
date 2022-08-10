@@ -76,7 +76,7 @@ export default function PostMintDialog({ colorScheme, publicTxnLoadingStatus, pu
                                                     <div className="text-2xl mb-5">
                                                         <a
                                                             className={`text-white hover:text-[${colorScheme}]`}
-                                                            style={{ textDecoration: "underline" }} href={"https://etherscan.io/tx/" + publicLocalTxnHash}
+                                                            style={{ textDecoration: "underline" }} href={"https://rinkeby.etherscan.io/tx/" + publicLocalTxnHash}
                                                         >
                                                             Transaction Link
                                                         </a>

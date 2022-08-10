@@ -1,13 +1,5 @@
-# Sample Hardhat Project
+# Zora Land (Frontend)
 
-This project demonstrates a basic Hardhat use case. It comes with a sample contract, a test for that contract, and a script that deploys that contract.
+Frontend for the Zora Land game. Lets users mint Zora Land token (created through zora-starter-kit edition creator and deployed on Rinkeby) and create custom Zora Land tokens (deployed on Polygon Mumbai testnet [0x55Df5c5CF92bb20A038e55617AF1cC2a78A78D8d](https://mumbai.polygonscan.com/address/0x55Df5c5CF92bb20A038e55617AF1cC2a78A78D8d#code)).
 
-Try running some of the following tasks:
-
-```shell
-npx hardhat help
-npx hardhat test
-GAS_REPORT=true npx hardhat test
-npx hardhat node
-npx hardhat run scripts/deploy.js
-```
+Access the website: https://metabolism-22.vercel.app/

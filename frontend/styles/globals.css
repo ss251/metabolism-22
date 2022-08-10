@@ -4,6 +4,7 @@
 
 html,
 body {
+  background: url(../public/w3bbie.gif);
   background-color: black;
   padding: 0;
   margin: 0;

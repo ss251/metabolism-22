@@ -87,12 +87,12 @@ const client = new Web3Storage({ token: process.env.NEXT_PUBLIC_WEB3_API_KEY });
 }
 
   return (
-    <div className="bg-bg_image">
+    <div className="bg-transparent">
       <Header />
       {address ? (
         <div className="lg:w-1/4 w-1/2 lg:ml-60 ml-24 -mt-8 lg:mt-0 flex flex-col pb-12 ">
-          <h1 className="mt-20 font-bold text-3xl text-white">CREATE NEW ZORA LAND TOKEN</h1>
-          <h4 className="mt-12 font-bold text-white">IMAGE URI</h4>
+          <h1 className="mt-20 font-bold text-3xl text-yellow-900">CREATE NEW ZORA LAND TOKEN</h1>
+          <h4 className="mt-12 font-bold text-black">IMAGE URI</h4>
           <input
             type="file"
             placeholder="Image URI"
@@ -103,21 +103,21 @@ const client = new Web3Storage({ token: process.env.NEXT_PUBLIC_WEB3_API_KEY });
           {imgFileUrl && (
             <img className="rounded mt-4" width="350" src={imgFileUrl} />
           )}
-          <h4 className="mt-8 font-bold text-white">NAME</h4>
+          <h4 className="mt-8 font-bold text-black">NAME</h4>
           <input
             className="mt-2 border-blue-500 rounded p-4 bg-blue-form-field"
             onChange={(e) => {
               updateFormInput({ ...formInput, name: e.target.value });
             }}
           ></input>
-          <h4 className="mt-8 font-bold text-white">SYMBOL</h4>
+          <h4 className="mt-8 font-bold text-black">SYMBOL</h4>
           <input
             className="mt-2 border-blue-500 rounded p-4 bg-blue-form-field"
             onChange={(e) => {
               updateFormInput({ ...formInput, symbol: e.target.value });
             }}
           ></input>
-          <h4 className="mt-8 font-bold text-white">ANIMATION URI</h4>
+          <h4 className="mt-8 font-bold text-black">ANIMATION URI</h4>
           <h4 className="w-140 mt-2 mb-2 text-gray-600">
             Upload multimedia of your choice
           </h4>
@@ -127,7 +127,7 @@ const client = new Web3Storage({ token: process.env.NEXT_PUBLIC_WEB3_API_KEY });
             className="my-4"
             onChange={onChangeAnimationURI}
           />
-          <h4 className="mt-8 font-bold text-white">DESCRIPTION</h4>
+          <h4 className="mt-8 font-bold text-black">DESCRIPTION</h4>
           <h4 className="w-140 mt-2 text-gray-600">
             Include details about the token
           </h4>

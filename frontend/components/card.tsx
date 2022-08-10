@@ -1,8 +1,20 @@
 import { LazyLoadImage } from 'react-lazy-load-image-component';
 import Image from 'next/image';
 import { useState } from 'react';
+import { useAccount, useConnect, useDisconnect, useNetwork } from 'wagmi';
 
 const Card = ({ image, id, title, address, description }) => {
+    const { chain } = useNetwork();
+
+    let explorerAddress;
+    if (chain?.id === 1) {
+        explorerAddress = 'https://etherscan.io/token/';
+    } else if(chain?.id === 4) {
+        explorerAddress = 'https://rinkeby.etherscan.io/token/';
+    } else if(chain?.id === 80001) {
+        explorerAddress = 'https://mumbai.polygonscan.com/token/';
+    }
+
     const [errorImage, setErrorImage] = useState(null);
     const errorImageUrl = "/zora.png";
 
@@ -21,7 +33,7 @@ const Card = ({ image, id, title, address, description }) => {
                         <p>{`${id}`}</p>
                     </div>
                     <div className="flex mr-3">
-                        <a target="_blank" rel="noreferrer" className="text-blue-700" href={`https://etherscan.io/token/${address}`}>{`${address.slice(0, 4)}...${address.slice(address.length - 4)}`}</a>
+                        <a target="_blank" rel="noreferrer" className="text-blue-700" href={`${explorerAddress}${address}`}>{`${address.slice(0, 4)}...${address.slice(address.length - 4)}`}</a>
                     </div>
                 </div>
                 <p>{description ? description.slice(0, 200) : "No Description"}</p>
